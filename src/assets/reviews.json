@@ -1,0 +1,29 @@
+[
+  {
+    "user": {
+      "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200&q=80",
+      "name": "John Doe"
+    },
+    "comment": "I had an amazing experience on this bidding platform! The interface is user-friendly, and I found exactly what I was looking for."
+  },
+  {
+    "user": {
+      "avatar": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&auto=format&fit=crop&w=200&h=200&q=80",
+      "name": "Jane Smith"
+    },
+    "comment": "The bidding process was smooth, and the customer support team was very helpful. I’ll definitely be back for more!"
+  },
+  {
+    "user": {
+      "avatar": "https://gravatar.com/avatar/27205e5c51cb03f862138b22bcb5dc20f94a342e744ff6df1b8dc8af3c865109?s=200",
+      "name": "Alex Brown"
+    },
+    "comment": "This marketplace has a great selection of products. I won a bid on an item I’ve been wanting for a long time!"
+  },
+  {
+    "user": {
+      "name": "Anonymous"
+    },
+    "comment": "I love how easy it is to navigate the site. The bidding system is fair and transparent."
+  }
+]
