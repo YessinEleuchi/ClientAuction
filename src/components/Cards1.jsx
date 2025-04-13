@@ -5,9 +5,6 @@ import {
   Box,
   Button,
   Image,
-  CardBody,
-  Stack,
-  Card,
   Flex,
   useDisclosure,
   Modal,
@@ -25,16 +22,16 @@ import {
   useColorModeValue,
 } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHeart, faClock, faDollarSign } from '@fortawesome/free-solid-svg-icons'; // Ajout des icônes
+import { faHeart, faClock } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addListingToWatchlist, placeBid, removeFromWatchlist } from '../features/listings/listingsSlice';
 import { store } from '../app/store';
-import { handleAuctioneerImageError, handleListingImageError, parseInteger } from '../features/utils';
+import { handleListingImageError, parseInteger } from '../features/utils';
 import toast from '../pages/toasts';
 import { updateGuestUser } from '../features/auth/authSlice';
 
-const CardListing = ({ listing }) => {
+const Cards1 = ({ listing, cardHeight }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -123,104 +120,101 @@ const CardListing = ({ listing }) => {
 
   return (
     <>
-      <Card
+      <Box
         bg={colors.bg}
+        borderRadius="lg"
         boxShadow={`0 6px 20px ${colors.shadow}`}
         border="1px solid"
         borderColor={colors.border}
-        borderRadius="2xl"
-        overflow="hidden" position="relative"
+        overflow="hidden"
+        h={`${cardHeight}px`} // Fixed height passed from Home component
+        w="260px" // Fixed width
+        display="flex"
+        flexDirection="column"
+        position="relative"
+        _hover={{ boxShadow: 'lg', transform: 'translateY(-2px)', transition: 'all 0.2s' }}
       >
         {/* Countdown Timer */}
         <Flex
           position="absolute"
-          top={4}
-          right={4}
-          bgGradient="linear(to-r, #4338CA, #7B6FE8)" // Dégradé linéaire de #4F3DB3 à #7B6FE8
-          color="white" // Texte en blanc pour contraster avec le dégradé
+          top="10px"
+          left="10px"
+          bgGradient="linear(to-r, #4338CA, #7B6FE8)"
+          color="white"
           fontFamily="monospace"
-          px={4}
-          py={2}
-          borderRadius="lg"
+          px={3}
+          py={1}
+          borderRadius="md"
           align="center"
           fontWeight="bold"
-          fontSize={{ base: "sm", md: "lg" }} // Ajustement responsif de la taille
-          boxShadow="0 4px 12px rgba(0, 0, 0, 0.15)" // Ombre légèrement plus prononcée
+          fontSize="sm"
+          boxShadow="0 4px 12px rgba(0, 0, 0, 0.15)"
           zIndex="10"
-          textAlign="center"
-          gap={2} // Espacement entre l'icône et le texte
+          gap={1}
         >
-          <FontAwesomeIcon
-            icon={faClock}
-            style={{ color: "white" }} // Icône en blanc pour contraster
-          />
-          {countdown}
+          <FontAwesomeIcon icon={faClock} style={{ color: "white" }} />
+          <Text>{countdown}</Text>
         </Flex>
 
-        <CardBody p={4}>
-          {/* Clickable image */}
-          <Box role="button" onClick={() => navigate(`/listings/${listing.slug}/`)}>
-            <Image
-              src={`http://127.0.0.1:8000/storage/${listing.images[0].resource_type}`}
-              onError={handleListingImageError}
-              borderRadius="xl"
-              w="100%"
-              h="16em"
-              objectFit="cover"
-              mb={3}
-              alt={`Image of ${listing.name}`}
-            />
-          </Box>
+        {/* Clickable Image */}
+        <Box
+          role="button"
+          onClick={() => navigate(`/listings/${listing.slug}/`)}
+          h="200px" // Fixed height for the image
+          w="100%"
+          overflow="hidden"
+        >
+          <Image
+            src={`http://127.0.0.1:8000/storage/${listing.images[0]?.resource_type}`}
+            onError={handleListingImageError}
+            alt={`Image of ${listing.name}`}
+            w="100%"
+            h="100%"
+            objectFit="cover"
+          />
+        </Box>
 
-          {/* Title and details */}
-          <Stack spacing={4} mt={4}>
-            <Heading fontSize="xl" color={colors.text} fontWeight="bold">
+        {/* Content Section */}
+        <Box p={4} flex="1" display="flex" flexDirection="column" justifyContent="space-between">
+          <Box>
+            <Heading fontSize="md" color={colors.text} fontWeight="bold" noOfLines={1}>
               {listing.name}
             </Heading>
-
-            <Flex align="center">
-              <Image
-                src={`http://127.0.0.1:8000/storage/${listing.auctioneer.avatar.path}`}
-                onError={handleAuctioneerImageError}
-                alt={`Avatar of ${listing.auctioneer.first_name}`}
-                borderRadius="full"
-                boxSize="40px"
-                objectFit="cover"
-                mr={3}
-              />
-              <Text color={colors.text} fontWeight="medium">
+            <Flex align="center" mt={2}>
+              <Text fontSize="sm" color={colors.text}>
                 By {listing.auctioneer.first_name}
               </Text>
-              <Flex ml="auto" align="center" color="green.400" fontWeight="bold" fontSize="xl">
-                <FontAwesomeIcon icon={faDollarSign} style={{ marginRight: '5px' }} />
-                {parseInteger(listing.price)}
-              </Flex>
+              <Text fontSize="sm" fontWeight="bold" color="green.400" ml={2}>
+                ${parseInteger(listing.price)}
+              </Text>
             </Flex>
+          </Box>
 
-            {/* Actions */}
-            <Flex mt={2} align="center" gap={3}>
-              <Button
-                bg={"#6366F1"}
-                color="white"
-                _hover={{ bg: colors.primaryHover }}
-                isDisabled={currentUserId === listing.auctioneer.id || !listing.active}
-                onClick={currentUserAccess ? onOpen : () => navigate('/login')}
-              >
-                Place a Bid
-              </Button>
-              <FontAwesomeIcon
-                icon={faHeart}
-                style={{ marginLeft: 'auto', color: heartColour, cursor: 'pointer' }}
-                size="2x"
-                onClick={handleWatchlist}
-                aria-label="Add to watchlist"
-              />
-            </Flex>
-          </Stack>
-        </CardBody>
-      </Card>
+          {/* Actions */}
+          <Flex justify="space-between" align="center" mt={3}>
+            <Button
+              size="sm"
+              bg={colors.primary}
+              color="white"
+              _hover={{ bg: colors.primaryHover }}
+              _active={{ transform: 'scale(0.95)' }}
+              isDisabled={currentUserId === listing.auctioneer.id || !listing.active}
+              onClick={currentUserAccess ? onOpen : () => navigate('/login')}
+            >
+              Place a Bid
+            </Button>
+            <FontAwesomeIcon
+              icon={faHeart}
+              style={{ color: heartColour, cursor: 'pointer' }}
+              size="lg"
+              onClick={handleWatchlist}
+              aria-label="Add to watchlist"
+            />
+          </Flex>
+        </Box>
+      </Box>
 
-           {/* Bid Modal */}
+      {/* Bid Modal */}
       <Modal isOpen={isOpen} onClose={onClose} isCentered>
         <ModalOverlay />
         <ModalContent bg={colors.bg} color={colors.text}>
@@ -264,4 +258,4 @@ const CardListing = ({ listing }) => {
   );
 };
 
-export default CardListing;
+export default Cards1;
