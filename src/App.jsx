@@ -10,6 +10,7 @@ import AdminDashboard  from './pages/AdminDashboard/AdminDashboard';
 import { Home, ActiveListings, SignUp, Login, PasswordResetRequest, PasswordReset, CreateListing, ListingDetails, UserDashboard, AllUserListings, ListingBids, WatchList, VerifyActivationOtp, ProtectedRoute, PublicRoute, NotFound } from './pages'; // Import AdminDashboard
 import { store } from './app/store';
 import interceptors from "../src/features/interceptors"
+import Explore from './pages/general/Explore';
 
 const App = () => {
   document.title = "BID TUN"
@@ -31,6 +32,7 @@ const App = () => {
               <Route path="/listings/categories/:categorySlug" element={<ActiveListings />} />
               <Route path="/watchlist" element={<WatchList />} />
               <Route path="/listings/:listingSlug" element={<ListingDetails />} />
+              <Route path="/explore" element={<Explore/>}/>
 
               <Route path="/signup" element={<PublicRoute Component={SignUp} />} />
               <Route path="/login" element={<PublicRoute Component={Login} />} />

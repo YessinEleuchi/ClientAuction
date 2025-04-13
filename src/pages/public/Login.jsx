@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import toast from '../toasts'
 import {
     login,
-    resendActivationEmail,
     reset,
 } from '../../features/auth/authSlice'
 import loginimage from '../../assets/login.jpeg'

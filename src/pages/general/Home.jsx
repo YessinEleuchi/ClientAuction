@@ -120,7 +120,7 @@ const t = translations[currentLanguage];
                 size="lg"
                 {...buttonStyles}
                 as={Link}
-                to="/listings"
+                to="/explore"
               >
                 {t.startExploring}
               </Button>

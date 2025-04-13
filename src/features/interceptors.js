@@ -1,11 +1,10 @@
 import api from "./api";
-import { refreshToken, resetUser } from "../features/auth/authSlice";
+import { refreshToken, resetUser } from './auth/authSlice';
 
 const setupAxiosInterceptors = (store, navigate) => {
   let user = store.getState().auth.user;
   let guestUser = store.getState().auth.guestUser;
 
-  // 🛡️ Chaque fois que Redux store change -> met à jour user et guestUser
   const updateUserToken = () => {
     user = store.getState().auth.user;
     guestUser = store.getState().auth.guestUser;
@@ -13,14 +12,13 @@ const setupAxiosInterceptors = (store, navigate) => {
 
   const unsubscribe = store.subscribe(updateUserToken);
 
-  // ➡️ Intercepter toutes les requêtes avant l'envoi
   api.interceptors.request.use(
     (config) => {
       const token = user?.access;
       const guestUserId = guestUser?.id;
 
       if (token) {
-        config.headers["Authorization"] = `Bearer ${token}`;  // ✅ Corrigé avec backticks
+        config.headers["Authorization"] = `Bearer ${token}`; // Fixed template literal syntax
       } else if (guestUserId) {
         config.headers["guestUserId"] = guestUserId;
       }
@@ -33,7 +31,6 @@ const setupAxiosInterceptors = (store, navigate) => {
 
   const { dispatch } = store;
 
-  // ➡️ Intercepter toutes les réponses
   api.interceptors.response.use(
     (response) => {
       return response;
@@ -41,22 +38,29 @@ const setupAxiosInterceptors = (store, navigate) => {
     async (error) => {
       const originalConfig = error.config;
 
-      // ⛔ Si erreur 401 (Unauthorized) et pas déjà tenté de refresh
       if (originalConfig && error.response && error.response.status === 401 && !originalConfig._retry) {
         originalConfig._retry = true;
         try {
-          const rs = await api.post("/auth/refresh/", {
-            refresh: user?.refresh,
-          });
+          // ✅ IMPORTANT : créer un Axios spécial sans interceptor pour refresh
+          const refreshApi = api.create();
 
-          const { data } = rs.data; // 👈 récupérer data.access
-          dispatch(refreshToken(data)); // 🔁 Mettre à jour Redux
+          const rs = await refreshApi.post(
+            "/auth/refresh/",
+            {},
+            {
+              headers: {
+                "Authorization": `Bearer ${user?.access}`, // Fixed template literal syntax
+              },
+            }
+          );
 
-          // ➡️ Rejouer la requête d'origine avec nouveau token
-          originalConfig.headers["Authorization"] = `Bearer ${data.access}`;
+          const { data } = rs.data;
+          dispatch(refreshToken(data));
+
+          // ➡️ Rejouer l'ancienne requête avec NOUVEAU token
+          originalConfig.headers["Authorization"] = `Bearer ${data.access}`; // Fixed template literal syntax
           return api(originalConfig);
         } catch (refreshError) {
-          // ❌ Refresh échoué : on logout
           dispatch(resetUser());
           navigate("/login");
           return Promise.reject(refreshError);
@@ -67,7 +71,6 @@ const setupAxiosInterceptors = (store, navigate) => {
     }
   );
 
-  // ➡️ Cleanup : permet d'arrêter l'écoute du store si besoin
   return () => {
     unsubscribe();
   };

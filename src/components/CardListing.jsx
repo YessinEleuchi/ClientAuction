@@ -144,7 +144,7 @@ const CardListing = ({ listing }) => {
         <CardBody p={4}>
           <Box role="button" onClick={() => navigate(`/listings/${listing.slug}/`)}>
             <Image
-              src={'http://127.0.0.1:8000/storage/' + listing.images.resource_type}
+              src={'http://127.0.0.1:8000/storage/' + listing.images[0].resource_type}
               onError={handleListingImageError}
               borderRadius="xl"
               w="100%"
@@ -175,7 +175,7 @@ const CardListing = ({ listing }) => {
 
             <Flex align="center">
               <Image
-                src={'http://127.0.0.1:8000/storage/' + listing.auctioneer.avatar.resource_type}
+                src={'http://127.0.0.1:8000/storage/' + listing.auctioneer.avatar.path}
                 onError={handleAuctioneerImageError}
                 alt="avatar"
                 borderRadius="full"
