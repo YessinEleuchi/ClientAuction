@@ -40,34 +40,127 @@ import { HamburgerIcon, CloseIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import Logo from '../assets/header-logo.png';
 import LogoDark from '../assets/logo-dark.png';
 
+// Flag icons (SVG inline for simplicity)
+const FrenchFlag = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" width="20" height="14">
+    <rect width="1" height="2" x="0" fill="#002395" />
+    <rect width="1" height="2" x="1" fill="#FFFFFF" />
+    <rect width="1" height="2" x="2" fill="#ED2939" />
+  </svg>
+);
+
+const EnglishFlag = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" width="20" height="14">
+    <clipPath id="s">
+      <path d="M0,0 v30 h60 v-30 z" />
+    </clipPath>
+    <clipPath id="t">
+      <path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z" />
+    </clipPath>
+    <g clipPath="url(#s)">
+      <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
+      <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" />
+      <path d="M0,0 L60,30 M60,0 L0,30" clipPath="url(#t)" stroke="#C8102E" strokeWidth="4" />
+      <path d="M30,0 v30 M0,15 h60" stroke="#fff" strokeWidth="10" />
+      <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" strokeWidth="6" />
+    </g>
+  </svg>
+);
+
+const ArabicFlag = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="20" height="14">
+    <rect width="1200" height="800" fill="#C8102E" />
+    <circle cx="600" cy="400" r="200" fill="#FFF" />
+    <circle cx="650" cy="400" r="150" fill="#C8102E" />
+    <path
+      d="M650 300a100 100 0 0 1 0 200 100 100 0 0 1-100-100 100 100 0 0 1 100-100zm0 40a60 60 0 0 0-60 60 60 60 0 0 0 60 60 60 60 0 0 0 60-60 60 60 0 0 0-60-60z"
+      fill="#FFF"
+    />
+  </svg>
+);
+
 // Fake notification data for WebsiteNotifications
-const fakeNotifications = [
-  {
-    id: 1,
-    message: "Your bid is terminally accepted for the website redesign project!",
-    timestamp: "2025-04-15 10:30 AM",
-    type: "success",
-    icon: "bell",
-  },
-  {
-    id: 2,
-    message: "A new comment on your blog post 'Top 10 Web Design Trends'.",
-    timestamp: "2025-04-15 09:15 AM",
-    type: "info",
-    icon: "bell",
-  },
-  {
-    id: 3,
-    message: "Your website hosting plan will renew in 3 days.",
-    timestamp: "2025-04-14 03:45 PM",
-    type: "warning",
-    icon: "bell",
-  },
-];
+const getFakeNotifications = (language) => {
+  switch (language) {
+    case 'AR':
+      return [
+        {
+          id: 1,
+          message: 'تم قبول عرضك نهائيًا لمشروع إعادة تصميم الموقع!',
+          timestamp: '2025-04-15 10:30 ص',
+          type: 'success',
+          icon: 'bell',
+        },
+        {
+          id: 2,
+          message: "تعليق جديد على منشور مدونتك 'أفضل 10 اتجاهات تصميم الويب'.",
+          timestamp: '2025-04-15 09:15 ص',
+          type: 'info',
+          icon: 'bell',
+        },
+        {
+          id: 3,
+          message: 'خطة استضافة موقعك الإلكتروني ستتجدد خلال 3 أيام.',
+          timestamp: '2025-04-14 03:45 م',
+          type: 'warning',
+          icon: 'bell',
+        },
+      ];
+    case 'FR':
+      return [
+        {
+          id: 1,
+          message: 'Votre enchère a été définitivement acceptée pour le projet de refonte du site !',
+          timestamp: '2025-04-15 10:30',
+          type: 'success',
+          icon: 'bell',
+        },
+        {
+          id: 2,
+          message: "Nouveau commentaire sur votre article de blog 'Top 10 des tendances de design web'.",
+          timestamp: '2025-04-15 09:15',
+          type: 'info',
+          icon: 'bell',
+        },
+        {
+          id: 3,
+          message: 'Votre plan d’hébergement de site web sera renouvelé dans 3 jours.',
+          timestamp: '2025-04-14 15:45',
+          type: 'warning',
+          icon: 'bell',
+        },
+      ];
+    default:
+      return [
+        {
+          id: 1,
+          message: 'Your bid is terminally accepted for the website redesign project!',
+          timestamp: '2025-04-15 10:30 AM',
+          type: 'success',
+          icon: 'bell',
+        },
+        {
+          id: 2,
+          message: "A new comment on your blog post 'Top 10 Web Design Trends'.",
+          timestamp: '2025-04-15 09:15 AM',
+          type: 'info',
+          icon: 'bell',
+        },
+        {
+          id: 3,
+          message: 'Your website hosting plan will renew in 3 days.',
+          timestamp: '2025-04-14 03:45 PM',
+          type: 'warning',
+          icon: 'bell',
+        },
+      ];
+  }
+};
 
 // WebsiteNotifications component
-const WebsiteNotifications = () => {
-  const [notifications, setNotifications] = useState(fakeNotifications);
+const WebsiteNotifications = ({ language }) => {
+  const [notifications, setNotifications] = useState(getFakeNotifications(language));
+  const t = translations[language];
 
   const dismissNotification = (id) => {
     setNotifications(notifications.filter((notification) => notification.id !== id));
@@ -83,11 +176,12 @@ const WebsiteNotifications = () => {
       shadow="lg"
       border="1px"
       borderColor={useColorModeValue('gray.200', 'gray.700')}
+      dir={language === 'AR' ? 'rtl' : 'ltr'}
     >
       <Flex alignItems="center" justifyContent="space-between" mb={4}>
         <Text fontSize="lg" fontWeight="semibold" color={useColorModeValue('gray.900', 'gray.100')}>
           <Bell className="h-5 w-5 mr-2 text-gray-600" />
-          Notifications
+          {t.notifications || 'Notifications'}
         </Text>
         {notifications.length > 0 && (
           <Badge
@@ -104,7 +198,7 @@ const WebsiteNotifications = () => {
       </Flex>
       {notifications.length === 0 ? (
         <Text fontSize="sm" color="gray.500" textAlign="center">
-          No new notifications
+          {t.noNotifications || 'No new notifications'}
         </Text>
       ) : (
         <Box maxH="64" overflowY="auto" spaceY={3}>
@@ -157,7 +251,7 @@ const WebsiteNotifications = () => {
                 size="sm"
                 color="gray.400"
                 _hover={{ color: 'gray.600' }}
-                aria-label="Dismiss notification"
+                aria-label={t.dismissNotification || 'Dismiss notification'}
               />
             </Box>
           ))}
@@ -172,39 +266,12 @@ const WebsiteNotifications = () => {
           variant="link"
           _hover={{ color: 'gray.800', textDecoration: 'underline' }}
         >
-          Clear all notifications
+          {t.clearNotifications || 'Clear all notifications'}
         </Button>
       )}
     </Box>
   );
 };
-
-// Flag icons (SVG inline for simplicity)
-const FrenchFlag = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 3 2" width="20" height="14">
-    <rect width="1" height="2" x="0" fill="#002395" />
-    <rect width="1" height="2" x="1" fill="#FFFFFF" />
-    <rect width="1" height="2" x="2" fill="#ED2939" />
-  </svg>
-);
-
-const EnglishFlag = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" width="20" height="14">
-    <clipPath id="s">
-      <path d="M0,0 v30 h60 v-30 z" />
-    </clipPath>
-    <clipPath id="t">
-      <path d="M30,15 h30 v15 z v15 h-30 z h-30 v-15 z v-15 h30 z" />
-    </clipPath>
-    <g clipPath="url(#s)">
-      <path d="M0,0 v30 h60 v-30 z" fill="#012169" />
-      <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6" />
-      <path d="M0,0 L60,30 M60,0 L0,30" clipPath="url(#t)" stroke="#C8102E" strokeWidth="4" />
-      <path d="M30,0 v30 M0,15 h60" stroke="#fff" strokeWidth="10" />
-      <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" strokeWidth="6" />
-    </g>
-  </svg>
-);
 
 const Header = () => {
   const navigate = useNavigate();
@@ -239,10 +306,17 @@ const Header = () => {
   const currentLanguage = useSelector((state) => state.language.currentLanguage);
   const t = translations[currentLanguage];
 
+  // Text direction for RTL support
+  const textDirection = currentLanguage === 'AR' ? 'rtl' : 'ltr';
+
+  // Set language and direction globally
   useEffect(() => {
     localStorage.setItem('preferredLanguage', currentLanguage);
-  }, [currentLanguage]);
+    document.documentElement.lang = currentLanguage.toLowerCase();
+    document.documentElement.dir = textDirection;
+  }, [currentLanguage, textDirection]);
 
+  // Close menu on route change
   useEffect(() => {
     if (isMenuOpen) closeMenu();
   }, [location]);
@@ -253,15 +327,15 @@ const Header = () => {
       navigate('/login');
       closeMenu();
       toast({
-        title: 'Logged out',
+        title: t.loggedOut || 'Logged out',
         status: 'success',
         duration: 3000,
         isClosable: true,
       });
     } catch (error) {
       toast({
-        title: 'Logout failed',
-        description: 'Please try again.',
+        title: t.logoutFailed || 'Logout failed',
+        description: t.tryAgain || 'Please try again.',
         status: 'error',
         duration: 3000,
         isClosable: true,
@@ -291,16 +365,18 @@ const Header = () => {
           }}
           role="menuitem"
           tabIndex={0}
+          dir={textDirection}
         >
           {icon && (
-            <Box mr={3} display="flex" alignItems="center">
+            <Box mr={textDirection === 'rtl' ? 0 : 3} ml={textDirection === 'rtl' ? 3 : 0} display="flex" alignItems="center">
               {icon}
             </Box>
           )}
           <Text>{children}</Text>
           {badgeCount > 0 && (
             <Badge
-              ml={2}
+              ml={textDirection === 'rtl' ? 0 : 2}
+              mr={textDirection === 'rtl' ? 2 : 0}
               fontSize="xs"
               colorScheme="purple"
               variant="solid"
@@ -340,11 +416,18 @@ const Header = () => {
         borderRadius="full"
         px={3}
         py={1.5}
-        aria-label="Select language"
+        aria-label={t.selectLanguage || 'Select language'}
+        dir={textDirection}
       >
-        <Flex alignItems="center" gap={2}>
-          {currentLanguage === 'FR' ? <FrenchFlag /> : <EnglishFlag />}
-          <Text fontSize={fontSize}>{currentLanguage === 'FR' ? 'FR' : 'EN'}</Text>
+        <Flex alignItems="center" gap={2} direction={textDirection === 'rtl' ? 'row-reverse' : 'row'}>
+          {currentLanguage === 'FR' ? (
+            <FrenchFlag />
+          ) : currentLanguage === 'AR' ? (
+            <ArabicFlag />
+          ) : (
+            <EnglishFlag />
+          )}
+          <Text fontSize={fontSize}>{currentLanguage}</Text>
         </Flex>
       </MenuButton>
       <MenuList
@@ -355,6 +438,7 @@ const Header = () => {
         p={2}
         bg={bgColor}
         zIndex={1100}
+        dir={textDirection}
       >
         <MenuItem
           onClick={() => dispatch(setLanguage('FR'))}
@@ -363,7 +447,7 @@ const Header = () => {
           _hover={{ bg: hoverBgColor }}
           _focus={{ bg: hoverBgColor }}
         >
-          <Flex alignItems="center" gap={3}>
+          <Flex alignItems="center" gap={3} direction={textDirection === 'rtl' ? 'row-reverse' : 'row'}>
             <FrenchFlag />
             <Text>Français</Text>
           </Flex>
@@ -375,9 +459,21 @@ const Header = () => {
           _hover={{ bg: hoverBgColor }}
           _focus={{ bg: hoverBgColor }}
         >
-          <Flex alignItems="center" gap={3}>
+          <Flex alignItems="center" gap={3} direction={textDirection === 'rtl' ? 'row-reverse' : 'row'}>
             <EnglishFlag />
             <Text>English</Text>
+          </Flex>
+        </MenuItem>
+        <MenuItem
+          onClick={() => dispatch(setLanguage('AR'))}
+          borderRadius="md"
+          py={2}
+          _hover={{ bg: hoverBgColor }}
+          _focus={{ bg: hoverBgColor }}
+        >
+          <Flex alignItems="center" gap={3} direction={textDirection === 'rtl' ? 'row-reverse' : 'row'}>
+            <ArabicFlag />
+            <Text>العربية</Text>
           </Flex>
         </MenuItem>
       </MenuList>
@@ -393,7 +489,8 @@ const Header = () => {
         px={2}
         py={1}
         _hover={{ bg: hoverBgColor }}
-        aria-label="User menu"
+        aria-label={t.userMenu || 'User menu'}
+        dir={textDirection}
       >
         <Flex alignItems="center">
           <Box
@@ -409,7 +506,7 @@ const Header = () => {
           </Box>
         </Flex>
       </MenuButton>
-      <MenuList zIndex={1100} bg={bgColor} borderColor={borderColor} borderRadius="lg">
+      <MenuList zIndex={1100} bg={bgColor} borderColor={borderColor} borderRadius="lg" dir={textDirection}>
         <MenuItem
           onClick={() => {
             navigate('/dashboard');
@@ -441,18 +538,19 @@ const Header = () => {
         icon={
           <Box position="relative">
             <Bell size={20} />
-            {fakeNotifications.length > 0 && (
+            {getFakeNotifications(currentLanguage).length > 0 && (
               <Badge
                 position="absolute"
                 top="-1"
-                right="-1"
+                right={textDirection === 'rtl' ? 'unset' : '-1'}
+                left={textDirection === 'rtl' ? '-1' : 'unset'}
                 fontSize="xs"
                 colorScheme="red"
                 variant="solid"
                 borderRadius="full"
                 px={2}
               >
-                {fakeNotifications.length}
+                {getFakeNotifications(currentLanguage).length}
               </Badge>
             )}
           </Box>
@@ -460,7 +558,7 @@ const Header = () => {
         variant="ghost"
         size="sm"
         _hover={{ bg: hoverBgColor }}
-        aria-label="Notifications"
+        aria-label={t.notifications || 'Notifications'}
       />
       <MenuList
         zIndex={1100}
@@ -469,14 +567,21 @@ const Header = () => {
         borderRadius="lg"
         p={0}
         minW="xs"
+        dir={textDirection}
       >
-        <WebsiteNotifications />
+        <WebsiteNotifications language={currentLanguage} />
       </MenuList>
     </Menu>
   );
 
   return (
-    <Box as="header" role="banner" aria-label="Main navigation">
+    <Box
+      as="header"
+      role="banner"
+      aria-label={t.mainNavigation || 'Main navigation'}
+      dir={textDirection}
+      fontFamily={currentLanguage === 'AR' ? "'Noto Sans Arabic', sans-serif" : 'inherit'}
+    >
       <Box
         bg={bgColor}
         color={textColor}
@@ -495,10 +600,11 @@ const Header = () => {
             alignItems="center"
             justifyContent="space-between"
             py={2}
+            direction={textDirection === 'rtl' ? 'row-reverse' : 'row'}
           >
             {/* Left Section: Logo */}
             <Box>
-              <Link to="/" aria-label="Home">
+              <Link to="/" aria-label={t.home || 'Home'}>
                 <Flex alignItems="center">
                   <Image
                     src={colorMode === 'dark' ? LogoDark : Logo}
@@ -508,7 +614,7 @@ const Header = () => {
                     transition="transform 0.3s ease"
                     _hover={{ transform: 'scale(1.05)' }}
                   />
-                  <VisuallyHidden>Home</VisuallyHidden>
+                  <VisuallyHidden>{t.home || 'Home'}</VisuallyHidden>
                 </Flex>
               </Link>
             </Box>
@@ -516,9 +622,13 @@ const Header = () => {
             {/* Center Section: Navigation Links */}
             {isLargeScreen && (
               <Flex justifyContent="center" flex={1} ml={6} mr={6}>
-                <HStack spacing={navItemSpacing}>
-                  <NavLink to="/" icon={<Home size={20} />}>{t.home}</NavLink>
-                  <NavLink to="/listings" icon={<TrendingUp size={20} />}>{t.activeListings}</NavLink>
+                <HStack spacing={navItemSpacing} direction={textDirection === 'rtl' ? 'row-reverse' : 'row'}>
+                  <NavLink to="/" icon={<Home size={20} />}>
+                    {t.home}
+                  </NavLink>
+                  <NavLink to="/listings" icon={<TrendingUp size={20} />}>
+                    {t.activeListings}
+                  </NavLink>
                   {user?.access && (
                     <>
                       <NavLink to="/watchlist" icon={<Eye size={20} />} badgeCount={1}>
@@ -534,13 +644,18 @@ const Header = () => {
             )}
 
             {/* Right Section: User Actions */}
-            <Flex justifyContent="flex-end" alignItems="center" gap={3}>
-              <HStack spacing={3}>
+            <Flex
+              justifyContent="flex-end"
+              alignItems="center"
+              gap={3}
+              direction={textDirection === 'rtl' ? 'row-reverse' : 'row'}
+            >
+              <HStack spacing={3} direction={textDirection === 'rtl' ? 'row-reverse' : 'row'}>
                 <LanguageSelector />
-                <NotificationBell /> {/* Added NotificationBell component */}
-                <Tooltip label="Toggle color mode" hasArrow placement="bottom">
+                <NotificationBell />
+                <Tooltip label={t.toggleColorMode || 'Toggle color mode'} hasArrow placement="bottom">
                   <IconButton
-                    aria-label="Toggle color mode"
+                    aria-label={t.toggleColorMode || 'Toggle color mode'}
                     icon={<ColorModeSwitcher />}
                     variant="ghost"
                     size="sm"
@@ -550,7 +665,7 @@ const Header = () => {
               </HStack>
 
               {isLargeScreen && (
-                <HStack spacing={3} ml={4}>
+                <HStack spacing={3} ml={textDirection === 'rtl' ? 0 : 4} mr={textDirection === 'rtl' ? 4 : 0} direction={textDirection === 'rtl' ? 'row-reverse' : 'row'}>
                   {!user?.access ? (
                     <>
                       <Button
@@ -562,7 +677,7 @@ const Header = () => {
                           closeMenu();
                         }}
                         _hover={{ bg: hoverBgColor }}
-                        aria-label="Log in"
+                        aria-label={t.login || 'Log in'}
                       >
                         {t.login}
                       </Button>
@@ -576,7 +691,7 @@ const Header = () => {
                           closeMenu();
                         }}
                         fontWeight="medium"
-                        aria-label="Sign up"
+                        aria-label={t.signup || 'Sign up'}
                       >
                         {t.signup}
                       </Button>
@@ -590,7 +705,7 @@ const Header = () => {
               {!isLargeScreen && (
                 <IconButton
                   onClick={toggleMenu}
-                  aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
+                  aria-label={isMenuOpen ? (t.closeMenu || 'Close menu') : (t.openMenu || 'Open menu')}
                   icon={isMenuOpen ? <CloseIcon /> : <HamburgerIcon />}
                   variant="ghost"
                   size="lg"
@@ -638,25 +753,24 @@ const Header = () => {
               borderColor={borderColor}
               overflowY="auto"
               maxHeight="calc(100vh - 60px)"
+              dir={textDirection}
             >
-              <VStack spacing={3} align="stretch">
-                <>
-                  <NavLink to="/" icon={<Home size={20} />}>{t.home}</NavLink>
-                  <NavLink to="/listings" icon={<TrendingUp size={20} />}>{t.activeListings}</NavLink>
-                  {user?.access && (
-                    <>
-                      <NavLink to="/watchlist" icon={<Eye size={20} />} badgeCount={1}>
-                        {t.watchList}
-                      </NavLink>
-                      <NavLink to="/create-listing" icon={<PlusCircle size={20} />}>
-                        {t.createListing}
-                      </NavLink>
-                      <Divider my={3} borderColor={borderColor} />
-                    </>
-                  )}
-                </>
-                {user?.access ? (
+              <VStack spacing={3} align={textDirection === 'rtl' ? 'end' : 'start'}>
+                <NavLink to="/" icon={<Home size={20} />}>
+                  {t.home}
+                </NavLink>
+                <NavLink to="/listings" icon={<TrendingUp size={20} />}>
+                  {t.activeListings}
+                </NavLink>
+                {user?.access && (
                   <>
+                    <NavLink to="/watchlist" icon={<Eye size={20} />} badgeCount={1}>
+                      {t.watchList}
+                    </NavLink>
+                    <NavLink to="/create-listing" icon={<PlusCircle size={20} />}>
+                      {t.createListing}
+                    </NavLink>
+                    <Divider my={3} borderColor={borderColor} />
                     <Button
                       variant="ghost"
                       onClick={() => {
@@ -664,9 +778,10 @@ const Header = () => {
                         closeMenu();
                       }}
                       leftIcon={<Home size={20} />}
-                      justifyContent="flex-start"
+                      rightIcon={textDirection === 'rtl' ? <Home size={20} /> : null}
+                      justifyContent={textDirection === 'rtl' ? 'flex-end' : 'flex-start'}
                       _hover={{ bg: hoverBgColor }}
-                      aria-label="Go to dashboard"
+                      aria-label={t.myDashboard || 'Go to dashboard'}
                     >
                       {t.myDashboard}
                     </Button>
@@ -677,25 +792,28 @@ const Header = () => {
                         closeMenu();
                       }}
                       leftIcon={<Bell size={20} />}
-                      justifyContent="flex-start"
+                      rightIcon={textDirection === 'rtl' ? <Bell size={20} /> : null}
+                      justifyContent={textDirection === 'rtl' ? 'flex-end' : 'flex-start'}
                       _hover={{ bg: hoverBgColor }}
-                      aria-label="Notifications"
+                      aria-label={t.notifications || 'Notifications'}
                     >
-                      {t.settings || 'Notifications'}
+                      {t.notifications || 'Notifications'}
                     </Button>
                     <Button
                       variant="ghost"
                       onClick={handleLogout}
                       leftIcon={<LogOut size={20} />}
-                      justifyContent="flex-start"
+                      rightIcon={textDirection === 'rtl' ? <LogOut size={20} /> : null}
+                      justifyContent={textDirection === 'rtl' ? 'flex-end' : 'flex-start'}
                       color={accentColor}
                       _hover={{ bg: accentHoverColor, color: 'white' }}
-                      aria-label="Log out"
+                      aria-label={t.logout || 'Log out'}
                     >
                       {t.logout}
                     </Button>
                   </>
-                ) : (
+                )}
+                {!user?.access && (
                   <>
                     <Button
                       variant="ghost"
@@ -704,7 +822,7 @@ const Header = () => {
                         closeMenu();
                       }}
                       _hover={{ bg: hoverBgColor }}
-                      aria-label="Sign up"
+                      aria-label={t.signup || 'Sign up'}
                     >
                       {t.signup}
                     </Button>
@@ -715,7 +833,7 @@ const Header = () => {
                         closeMenu();
                       }}
                       _hover={{ bg: hoverBgColor }}
-                      aria-label="Log in"
+                      aria-label={t.login || 'Log in'}
                     >
                       {t.login}
                     </Button>
