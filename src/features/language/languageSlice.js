@@ -2,7 +2,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  currentLanguage: localStorage.getItem('preferredLanguage') || 'FR',
+  currentLanguage: localStorage.getItem('preferredLanguage') || 'EN',
 };
 
 const languageSlice = createSlice({

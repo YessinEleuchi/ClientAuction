@@ -15,7 +15,7 @@ import {
     login,
     reset,
 } from '../../features/auth/authSlice'
-import loginimage from '../../assets/login.jpeg'
+import loginimage from '../../assets/Login.png'
 
 const Login = () => {
     const [userData, setUserData] = useState({
@@ -72,8 +72,15 @@ const Login = () => {
             zIndex="-1"
           />
 
-          <Box bg="whiteAlpha.800" p={8} rounded="md" shadow="md" width="400px">
-              <Heading mb={6} textAlign="center">
+          <Box
+            bg="whiteAlpha.900"
+            p={10}
+            rounded="lg"
+            shadow="lg"
+            width={{ base: '90%', sm: '500px' }}
+            maxW="600px"
+          >
+              <Heading mb={8} textAlign="center" fontSize="3xl">
                   Connexion
               </Heading>
 
@@ -83,7 +90,10 @@ const Login = () => {
                     name="email"
                     value={email}
                     onChange={handleChange}
-                    mb={4}
+                    mb={6}
+                    size="lg"
+                    fontSize="md"
+                    borderColor="gray.300"
                   />
                   <Input
                     placeholder="Mot de passe"
@@ -91,23 +101,44 @@ const Login = () => {
                     name="password"
                     value={password}
                     onChange={handleChange}
-                    mb={6}
+                    mb={8}
+                    size="lg"
+                    fontSize="md"
+                    borderColor="gray.300"
                   />
 
-                  <Button type="submit" colorScheme="blue" width="full" isDisabled={isLoading}>
+                  <Button
+                    type="submit"
+                    color="white"
+                    bgColor="rgb(78, 53, 220)"
+                    _hover={{ bg: '#5538D4' }}
+                    w="100%"
+                    size="lg"
+                    fontSize="md"
+                    isDisabled={isLoading}
+                    py={6}
+                  >
                       {isLoading ? <Spinner size="sm" /> : 'Se connecter'}
                   </Button>
               </form>
 
-              <Text mt={4} fontSize="sm" textAlign="center">
-                  Vous n'avez pas de compte ? <Link to="/register" style={{ color: 'blue' }}>S’inscrire</Link>
+              <Text mt={6} fontSize="md" textAlign="center">
+                  Vous n'avez pas de compte ?{' '}
+                  <Link to="/signup" style={{ color: 'blue', fontWeight: 'medium' }}>
+                      S’inscrire
+                  </Link>
               </Text>
-              <Text mt={2} fontSize="sm" textAlign="center">
-                  <Link to="/reset-password" style={{ color: 'blue' }}>Mot de passe oublié ?</Link>
+              <Text mt={3} fontSize="md" textAlign="center">
+                  <Link
+                    to="/reset-password"
+                    style={{ color: 'blue', fontWeight: 'medium' }}
+                  >
+                      Mot de passe oublié ?
+                  </Link>
               </Text>
           </Box>
       </Flex>
-    )
-}
+    );
+};
 
-export default Login
+export default Login;

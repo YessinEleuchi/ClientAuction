@@ -274,7 +274,7 @@ const Home = () => {
                       <Image src={quoteImg} alt="Quote" w="20px" opacity={0.5} />
                     </Flex>
                     <Text fontSize="sm" color={secondaryTextColor}>
-                      {review.comment}
+                      {t.reviewsList[i]}
                     </Text>
                   </VStack>
                 </CardBody>

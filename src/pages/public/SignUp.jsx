@@ -6,7 +6,7 @@ import toast from '../toasts'
 import { reset } from '../../features/auth/authSlice'
 import { register } from '../../features/auth/authSlice'
 // Import the video directly if using webpack or similar bundler
-import signVideo from '../../assets/vidrrr.mp4'
+import loginimage from '../../assets/Login.png'
 
 const SignUp = () => {
     const [userData, setUserData] = useState({
@@ -70,160 +70,165 @@ const SignUp = () => {
         dispatch(register(userData))
     }
 
-    const loadingButtonAttrs = {
-        isLoading,
-        loadingText: 'Submitting',
-        spinnerPlacement: 'start'
-    }
+
 
     return (
-        <Flex 
-            minHeight='100vh' 
-            alignItems='center' 
-            justifyContent='center' 
-            p={[4, 6, 8]}
-            bg="gray.50"
-        >
-            <Flex 
-                width={['100%', '100%', '90%', '80%']} 
-                maxW='1200px' 
-                boxShadow='lg' 
-                borderRadius='md' 
-                overflow='hidden'
-                bg="white"
-            >
-                {/* Form Section */}
-                <Box 
-                    flex='1' 
-                    bg='white' 
-                    p={[4, 6, 8]} 
-                    maxW={['100%', '100%', '50%']}
-                >
-                    <Heading size='xl' mb={2} color="#1A202C">Sign Up</Heading>
-                    <Text mb={8}>
-                        Do you already have an account? <Link to='/login' style={{ color: 'rgb(78, 53, 220)', fontWeight: 'bold' }}>Log In Here!</Link>
-                    </Text>
+      <Flex
+        direction="column"
+        align="center"
+        justify="center"
+        minH="100vh"
+        maxH="100vh" // Restrict height to viewport
+        overflow="hidden"
+      >
+          <Box
+            position="absolute"
+            w="100%"
+            h="100%"
+            bgImage={`url(${loginimage})`}
+            bgSize="cover"
+            bgPosition="center"
+            zIndex="-1"
+          />
 
-                    <form method='POST' onSubmit={submitHandler}>
-                        <Text fontWeight='medium' mb={1}>First name*</Text>
-                        <Input 
-                            type='name' 
-                            name='first_name' 
-                            mb={errors.first_name ? 1 : 4} 
-                            required 
-                            value={userData.first_name} 
-                            onChange={handleChange} 
-                            size='md'
-                            {...(errors.first_name && { isInvalid: true })}
-                        />
-                        <Text mb={4} fontSize={13} fontWeight='bold' color='red.500'>{errors?.first_name}</Text>
+          <Box
+            bg="whiteAlpha.900"
+            p={10}
+            rounded="lg"
+            shadow="lg"
+            width={{ base: '90%', sm: '500px' }}
+            maxW="600px"
+          >
+              <Heading mb={8} textAlign="center" fontSize="3xl">
+                  Sign Up
+              </Heading>
 
-                        <Text fontWeight='medium' mb={1}>Last name*</Text>
-                        <Input 
-                            type='name' 
-                            name='last_name' 
-                            mb={errors.last_name ? 1 : 4} 
-                            required 
-                            value={userData.last_name} 
-                            onChange={handleChange} 
-                            size='md'
-                            {...(errors.last_name && { isInvalid: true })}
-                        />
-                        <Text mb={4} fontSize={13} fontWeight='bold' color='red.500'>{errors?.last_name}</Text>
+              <form method="POST" onSubmit={submitHandler}>
+                  <Text fontWeight="medium" mb={2}>
+                      First name*
+                  </Text>
+                  <Input
+                    type="name"
+                    name="first_name"
+                    mb={errors.first_name ? 2 : 6}
+                    required
+                    value={userData.first_name}
+                    onChange={handleChange}
+                    size="lg"
+                    fontSize="md"
+                    borderColor="gray.300"
+                    {...(errors.first_name && { isInvalid: true })}
+                  />
+                  <Text mb={errors.first_name ? 6 : 0} fontSize="sm" color="red.500">
+                      {errors?.first_name}
+                  </Text>
 
-                        <Text fontWeight='medium' mb={1}>Email Address*</Text>
-                        <Input 
-                            type='email' 
-                            name='email' 
-                            mb={errors.email ? 1 : 4} 
-                            required 
-                            value={userData.email} 
-                            onChange={handleChange} 
-                            size='md'
-                            {...(errors.email && { isInvalid: true })}
-                        />
-                        <Text mb={4} fontSize={13} fontWeight='bold' color='red.500'>{errors?.email}</Text>
+                  <Text fontWeight="medium" mb={2}>
+                      Last name*
+                  </Text>
+                  <Input
+                    type="name"
+                    name="last_name"
+                    mb={errors.last_name ? 2 : 6}
+                    required
+                    value={userData.last_name}
+                    onChange={handleChange}
+                    size="lg"
+                    fontSize="md"
+                    borderColor="gray.300"
+                    {...(errors.last_name && { isInvalid: true })}
+                  />
+                  <Text mb={errors.last_name ? 6 : 0} fontSize="sm" color="red.500">
+                      {errors?.last_name}
+                  </Text>
 
-                        <Text fontWeight='medium' mb={1}>Password*</Text>
-                        <Input 
-                            type='password' 
-                            name='password' 
-                            mb={errors.password ? 1 : 4} 
-                            required 
-                            value={userData.password} 
-                            onChange={handleChange} 
-                            size='md'
-                            {...(errors.password && { isInvalid: true })}
-                        />
-                        <Text mb={4} fontSize={13} fontWeight='bold' color='red.500'>{errors?.password}</Text>
+                  <Text fontWeight="medium" mb={2}>
+                      Email Address*
+                  </Text>
+                  <Input
+                    type="email"
+                    name="email"
+                    mb={errors.email ? 2 : 6}
+                    required
+                    value={userData.email}
+                    onChange={handleChange}
+                    size="lg"
+                    fontSize="md"
+                    borderColor="gray.300"
+                    {...(errors.email && { isInvalid: true })}
+                  />
+                  <Text mb={errors.email ? 6 : 0} fontSize="sm" color="red.500">
+                      {errors?.email}
+                  </Text>
 
-                        <Checkbox 
-                            name='terms_agreement' 
-                            isChecked={userData.terms_agreement} 
-                            onChange={handleChange} 
-                            required 
-                            mb={6}
-                            {...(errors.terms_agreement && { isInvalid: true })}
-                        >
-                            I agree to the Terms & Policy
-                        </Checkbox>
-                        <Text mb={4} fontSize={13} fontWeight='bold' color='red.500'>{errors?.terms_agreement}</Text>
+                  <Text fontWeight="medium" mb={2}>
+                      Password*
+                  </Text>
+                  <Input
+                    type="password"
+                    name="password"
+                    mb={errors.password ? 2 : 6}
+                    required
+                    value={userData.password}
+                    onChange={handleChange}
+                    size="lg"
+                    fontSize="md"
+                    borderColor="gray.300"
+                    {...(errors.password && { isInvalid: true })}
+                  />
+                  <Text mb={errors.password ? 6 : 0} fontSize="sm" color="red.500">
+                      {errors?.password}
+                  </Text>
 
-                        <Button 
-                            {...((!Object.values(errors).every(value => value === '')) && { isDisabled: true })}
-                            {...(isLoading && { ...loadingButtonAttrs })} 
-                            type='submit' 
-                            color='white' 
-                            bgColor='rgb(78, 53, 220)' 
-                            _hover={{ bg: 'blue.800' }} 
-                            w='100%'
-                            size='md'
-                        >
-                            Sign Up
-                        </Button>
-                    </form>
-                </Box>
-                
-                {/* Video Section */}
-                <Box 
-                    flex='1' 
-                    display={['none', 'none', 'block']} 
-                    position="relative"
-                    overflow="hidden"
-                    bg="gray.300"
-                >
-                    <video
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
+                  <Checkbox
+                    name="terms_agreement"
+                    isChecked={userData.terms_agreement}
+                    onChange={handleChange}
+                    required
+                    mb={8}
+                    size="md"
+                    {...(errors.terms_agreement && { isInvalid: true })}
+                  >
+                      I agree to the Terms & Policy
+                  </Checkbox>
+                  <Text mb={errors.terms_agreement ? 6 : 0} fontSize="sm" color="red.500">
+                      {errors?.terms_agreement}
+                  </Text>
 
-                        }}
-                    >
-                        <source src={  signVideo ||"/assets/vidrrr.mp4"} type="video/mp4" />
-                        Your browser does not support the video tag.
-                    </video>
-                    
-                    <Box 
-                        position="absolute"
-                        top="0"
-                        left="0"
-                        width="100%"
-                        height="100%"
-                       bg="rgba(0,0,0,0.1)"
-                        zIndex="1"
-                    />
-                </Box>
-            </Flex>
-        </Flex>
-    )
-}
+                  <Button
+                    {...(!Object.values(errors).every((value) => value === '') && {
+                        isDisabled: true,
+                    })}
+                    {...(isLoading && {
+                        isLoading,
+                        loadingText: 'Submitting',
+                        spinnerPlacement: 'start',
+                    })}
+                    type="submit"
+                    color="white"
+                    bgColor="rgb(78, 53, 220)"
+                    _hover={{ bg: '#5538D4' }}
+                    w="100%"
+                    size="lg"
+                    fontSize="md"
+                    py={6}
+                  >
+                      Sign Up
+                  </Button>
+              </form>
 
-export default SignUp
+              <Text mt={6} fontSize="md" textAlign="center">
+                  Do you already have an account?{' '}
+                  <Link
+                    to="/login"
+                    style={{ color: 'blue', fontWeight: 'medium' }}
+                  >
+                      Log In Here!
+                  </Link>
+              </Text>
+          </Box>
+      </Flex>
+    );
+};
+
+export default SignUp;

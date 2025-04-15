@@ -185,7 +185,7 @@ const Cards1 = ({ listing, cardHeight }) => {
                 By {listing.auctioneer.first_name}
               </Text>
               <Text fontSize="sm" fontWeight="bold" color="green.400" ml={2}>
-                ${parseInteger(listing.price)}
+                {parseInteger(listing.price)}DT
               </Text>
             </Flex>
           </Box>
@@ -220,14 +220,14 @@ const Cards1 = ({ listing, cardHeight }) => {
         <ModalContent bg={colors.bg} color={colors.text}>
           <form onSubmit={submitHandler}>
             <ModalHeader>
-              Highest Bid: ${highestBid || parseInteger(listing.highest_bid)}
+              Highest Bid: {highestBid || parseInteger(listing.highest_bid)} DT
             </ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <NumberInput value={bidData.amount} mb={4}>
                 <NumberInputField
                   name="amount"
-                  placeholder="$0.00"
+                  placeholder="DT 0.00"
                   required
                   onChange={(e) => setBidData({ amount: e.target.value })}
                 />

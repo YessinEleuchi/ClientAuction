@@ -3,10 +3,12 @@ import api from '../api'
 // Retrieve listings
 const getListings = async (quantity) => {
     var url = '/listings/'
+
     if (quantity) {
         url = `/listings/?quantity=${quantity}`
     }
     const response = await api.get(url);
+    console.log(response.data)
     return response.data;
 }
 
