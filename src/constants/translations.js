@@ -33,7 +33,7 @@ export const translations = {
 
     // How It Works translations
     howItWorks: {
-      title: '📜 Comment Ça Marche – Règles Générales de BidTun',
+      title: ' Comment Ça Marche – Règles Générales de BidTun',
       intro:
         'Bienvenue chez <strong>BidTun</strong> ! Veuillez prendre un moment pour lire attentivement nos règles avant de participer à une enchère. Ces règles garantissent une expérience sûre et équitable pour tous.',
       sections: [
@@ -176,7 +176,7 @@ export const translations = {
 
     // How It Works translations
     howItWorks: {
-      title: '📜 How It Works – General Rules of BidTun',
+      title: ' How It Works – General Rules of BidTun',
       intro:
         'Welcome to <strong>BidTun</strong>! Please take a moment to read our rules carefully before participating in any auction. These rules ensure a safe and fair experience for everyone.',
       sections: [

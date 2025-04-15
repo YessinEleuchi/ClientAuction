@@ -6,16 +6,21 @@ import {
     Flex,
     Heading,
     Image,
-    NumberInput,
-    NumberInputField,
-    NumberDecrementStepper,
-    NumberIncrementStepper,
-    NumberInputStepper,
+    Input,
     Text,
     Badge,
     useColorModeValue,
     VStack,
     IconButton,
+    HStack,
+    Modal,
+    ModalOverlay,
+    ModalContent,
+    ModalHeader,
+    ModalFooter,
+    ModalBody,
+    ModalCloseButton,
+    useDisclosure,
 } from '@chakra-ui/react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -31,7 +36,10 @@ import NotFound from './NotFound';
 const MotionCard = motion(Card);
 
 const ListingDetails = () => {
-    const [bidData, setBidData] = useState({ amount: '', autobid: '' }); // Ajout du champ Autobid
+    const [bidData, setBidData] = useState({ amount: '', autobid: '' });
+    const [isAutobidActive, setIsAutobidActive] = useState(false);
+    const [autobidThreshold, setAutobidThreshold] = useState('');
+    const [autobidIncrement, setAutobidIncrement] = useState('');
     const [highestBid, setHighestBid] = useState(null);
     const [countdown, setCountdown] = useState('');
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -44,6 +52,7 @@ const ListingDetails = () => {
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const { isOpen, onOpen, onClose } = useDisclosure();
 
     const bgColor = useColorModeValue('#F9FAFB', 'gray.800');
     const cardBg = useColorModeValue('white', 'gray.700');
@@ -105,6 +114,33 @@ const ListingDetails = () => {
         setCurrentImageIndex((prev) => (prev === imageCount - 1 ? 0 : prev + 1));
     };
 
+    // Handle autobid submission from modal
+    const handleAutobidSubmit = () => {
+        const threshold = parseFloat(autobidThreshold);
+        const increment = parseFloat(autobidIncrement);
+        if (!threshold || threshold <= 0) {
+            toast.warning('Please set a valid maximum autobid threshold.');
+            return;
+        }
+        if (!increment || increment <= 0) {
+            toast.warning('Please set a valid increment amount.');
+            return;
+        }
+        setIsAutobidActive(true);
+        setBidData({ ...bidData, autobid: autobidThreshold });
+        onClose();
+    };
+
+    // Toggle Autobid
+    const toggleAutobid = () => {
+        if (isAutobidActive) {
+            setIsAutobidActive(false);
+            setBidData({ ...bidData, autobid: '' });
+        } else {
+            onOpen();
+        }
+    };
+
     // Handle bid submission
     const handlePlaceBid = (e) => {
         e.preventDefault();
@@ -119,7 +155,7 @@ const ListingDetails = () => {
         const minBid = highestBid ? highestBid + 1 : listing?.listing?.price;
 
         if (!bidAmount && !autobidAmount) {
-            toast.error('Please enter a bid amount or an autobid amount.');
+            toast.error('Please enter a bid amount or enable autobid.');
             return;
         }
 
@@ -135,7 +171,7 @@ const ListingDetails = () => {
             if (res?.payload?.status === 'success') {
                 toast.success('Bid placed successfully!');
                 setHighestBid(amountToSubmit);
-                setBidData({ amount: '', autobid: '' });
+                setBidData({ amount: '', autobid: isAutobidActive ? autobidThreshold : '' });
                 dispatch(getListing(listingSlug));
             } else {
                 toast.error(res.payload || 'Failed to place bid.');
@@ -172,19 +208,19 @@ const ListingDetails = () => {
     return (
       <Box bg={bgColor} minHeight="100vh" py={10} px={{ base: 4, md: 10 }}>
           <MotionCard
-            p={8}
+            p={{ base: 4, md: 8 }}
             borderRadius="2xl"
-            boxShadow="xl"
+            boxShadow="lg"
             bg={cardBg}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            maxW="6xl" // Augmentation de la largeur de la carte
+            maxW="6xl"
             mx="auto"
           >
-              <VStack spacing={8}>
-                  {/* Image Carousel */}
-                  <Box position="relative" w="100%" h={{ base: "300px", md: "400px" }} borderRadius="xl" overflow="hidden">
+              <Flex direction={{ base: 'column', md: 'row' }} gap={8}>
+                  {/* Left Column: Image Carousel */}
+                  <Box flex="1" position="relative" borderRadius="xl" overflow="hidden">
                       {images.length > 0 ? (
                         <>
                             <Image
@@ -197,7 +233,7 @@ const ListingDetails = () => {
                               borderRadius="xl"
                               objectFit="cover"
                               w="100%"
-                              h="100%"
+                              h={{ base: '300px', md: '500px' }}
                               onError={handleListingImageError}
                               transition="all 0.3s ease"
                               _hover={{ transform: 'scale(1.05)' }}
@@ -232,26 +268,58 @@ const ListingDetails = () => {
                                     _hover={{ bg: arrowHoverBg, transform: 'translateY(-52%)' }}
                                     onClick={handleNextImage}
                                   />
-                                  <Flex justify="center" position="absolute" bottom={4} w="100%" gap={1}>
+                                  <Flex justify="center" position="absolute" bottom={4} w="100%" gap={2}>
                                       {images.map((_, index) => (
                                         <Box
                                           key={index}
-                                          w="8px"
-                                          h="8px"
+                                          w="10px"
+                                          h="10px"
                                           borderRadius="full"
-                                          bg={index === currentImageIndex ? arrowColor : 'whiteAlpha.500'}
+                                          bg={index === currentImageIndex ? arrowColor : 'blue.200'}
                                           transition="background-color 0.3s ease"
                                         />
                                       ))}
                                   </Flex>
                               </>
                             )}
+                            <Badge
+                              colorScheme={isAuctionActive ? 'green' : 'red'}
+                              position="absolute"
+                              top={4}
+                              left={4}
+                              borderRadius="full"
+                              px={3}
+                              py={1}
+                              fontSize="sm"
+                              textTransform="uppercase"
+                            >
+                                {isAuctionActive ? 'Active' : 'Closed'}
+                            </Badge>
+                            <Flex
+                              position="absolute"
+                              top={4}
+                              right={4}
+                              bgGradient="linear(to-r, #4338CA, #7B6FE8)"
+                              color="white"
+                              fontFamily="monospace"
+                              px={4}
+                              py={2}
+                              borderRadius="lg"
+                              align="center"
+                              fontWeight="bold"
+                              fontSize={{ base: 'sm', md: 'md' }}
+                              boxShadow="0 4px 12px rgba(0, 0, 0, 0.15)"
+                              gap={2}
+                            >
+                                <FontAwesomeIcon icon={faClock} style={{ color: 'white' }} />
+                                {countdown || 'Loading...'}
+                            </Flex>
                         </>
                       ) : (
                         <Box
                           borderRadius="xl"
                           w="100%"
-                          h="100%"
+                          h={{ base: '300px', md: '500px' }}
                           bg="gray.200"
                           display="flex"
                           alignItems="center"
@@ -260,134 +328,187 @@ const ListingDetails = () => {
                             <Text color="gray.500">No Image Available</Text>
                         </Box>
                       )}
-                      <Badge
-                        colorScheme={isAuctionActive ? 'green' : 'red'}
-                        position="absolute"
-                        top={4}
-                        left={4}
-                        borderRadius="full"
-                        px={3}
-                        py={1}
-                      >
-                          {isAuctionActive ? 'Active' : 'Closed'}
-                      </Badge>
-                      <Flex
-                        position="absolute"
-                        top={4}
-                        right={4}
-                        bgGradient="linear(to-r, #4338CA, #7B6FE8)"
-                        color="white"
-                        fontFamily="monospace"
-                        px={4}
-                        py={2}
-                        borderRadius="lg"
-                        align="center"
-                        fontWeight="bold"
-                        fontSize={{ base: 'sm', md: 'md' }}
-                        boxShadow="0 4px 12px rgba(0, 0, 0, 0.15)"
-                        gap={2}
-                      >
-                          <FontAwesomeIcon icon={faClock} style={{ color: 'white' }} />
-                          {countdown || 'Loading...'}
-                      </Flex>
                   </Box>
 
-                  {/* Listing Details */}
-                  <VStack spacing={4} alignItems="flex-start" w="full">
-                      <Heading size="xl" color={accentColor} textAlign="center" w="full">
-                          {listing?.listing?.name || 'Loading...'}
-                      </Heading>
-                      <Text color="gray.500" fontSize="md" fontWeight="bold" >
-                          {listing?.listing?.desc || 'No description available.'}
-                      </Text>
-                      <Text fontWeight="bold" fontSize="lg" color="blue">
-                          Starting Price: <Text as="span" color="black">${listing?.listing?.price || '0'}</Text>
-                      </Text>
-                      <Text fontWeight="bold" fontSize="lg" color="blue">
-                          Highest Bid: <Text as="span" color="yellow.500">${highestBid || listing?.listing?.highest_bid || '0'}</Text>
-                      </Text>
-                  </VStack>
-
-                  {/* Bid Form */}
-                  <form onSubmit={handlePlaceBid} style={{ width: '100%' }}>
-                      <VStack spacing={4}>
-                          {/* Champ de Bid classique */}
-                          <NumberInput
-                            value={bidData.amount}
-                            w="full"
-                            maxW="lg" // Champ très large
-                            isDisabled={!isAuctionActive || createBidLoading}
-                          >
-                              <NumberInputField
-                                name="amount"
-                                placeholder="Enter your bid amount ($)"
-                                onChange={(e) => setBidData({ ...bidData, amount: e.target.value })}
-                                borderRadius="lg"
-                                fontSize="lg"
-                                py={6}
-                              />
-                              <NumberInputStepper>
-                                  <NumberIncrementStepper />
-                                  <NumberDecrementStepper />
-                              </NumberInputStepper>
-                          </NumberInput>
-
-                          {/* Champ Autobid */}
-                          <NumberInput
-                            value={bidData.autobid}
-                            w="full"
-                            maxW="lg" // Champ très large
-                            isDisabled={!isAuctionActive || createBidLoading}
-                          >
-                              <NumberInputField
-                                name="autobid"
-                                placeholder="Set Autobid maximum ($)"
-                                onChange={(e) => setBidData({ ...bidData, autobid: e.target.value })}
-                                borderRadius="lg"
-                                fontSize="lg"
-                                py={6}
-                              />
-                              <NumberInputStepper>
-                                  <NumberIncrementStepper />
-                                  <NumberDecrementStepper />
-                              </NumberInputStepper>
-                          </NumberInput>
-
-                          {/* Boutons */}
-                          <Button
-                            type="submit"
-                            colorScheme="purple"
-                            w="full"
-                            maxW="lg" // Bouton très large
-                            size="md" // Bouton plus petit en hauteur
-                            isDisabled={!isAuctionActive || currentUser?.id === listing?.listing?.auctioneer?.id || createBidLoading}
-                            isLoading={createBidLoading}
-                            loadingText="Submitting"
-                            borderRadius="lg"
-                            fontSize="md"
-                            py={5}
-                          >
-                              Place Bid
-                          </Button>
-                          {currentUser?.id === listing?.listing?.auctioneer?.id && isAuctionActive && (
-                            <Button
-                              colorScheme="red"
-                              w="full"
-                              maxW="lg" // Bouton très large
-                              size="md" // Bouton plus petit en hauteur
-                              onClick={handleCloseAuction}
-                              isDisabled={createBidLoading}
-                              borderRadius="lg"
-                              fontSize="md"
-                              py={5}
-                            >
-                                Close Auction
-                            </Button>
-                          )}
+                  {/* Right Column: Listing Details and Bid Form */}
+                  <VStack flex="1" spacing={6} align="start">
+                      {/* Listing Details */}
+                      <VStack spacing={4} align="start" w="full">
+                          <Heading size="lg" color={accentColor} textAlign="left">
+                              {listing?.listing?.name || 'Loading...'}
+                          </Heading>
+                          <Text color="gray.500" fontSize="md">
+                              {listing?.listing?.desc || 'No description available.'}
+                          </Text>
+                          <HStack spacing={4}>
+                              <Box>
+                                  <Text fontSize="sm" color="gray.600">
+                                      Starting Price
+                                  </Text>
+                                  <Text fontWeight="bold" fontSize="lg" color="black">
+                                      ${listing?.listing?.price || '0.00'}
+                                  </Text>
+                              </Box>
+                              <Box>
+                                  <Text fontSize="sm" color="gray.600">
+                                      Highest Bid
+                                  </Text>
+                                  <Text fontWeight="bold" fontSize="lg" color="blue.500">
+                                      ${highestBid || listing?.listing?.highest_bid || '0.00'}
+                                  </Text>
+                              </Box>
+                          </HStack>
                       </VStack>
-                  </form>
-              </VStack>
+
+                      {/* Bid Form */}
+                      <form onSubmit={handlePlaceBid} style={{ width: '100%' }}>
+                          <VStack spacing={4} w="full">
+                              {/* Bid Amount Input */}
+                              <Input
+                                type="number"
+                                placeholder="Enter your bid amount ($)"
+                                value={bidData.amount}
+                                onChange={(e) => setBidData({ ...bidData, amount: e.target.value })}
+                                borderRadius="md"
+                                borderColor="gray.200"
+                                h="48px"
+                                fontSize="md"
+                                _hover={{ borderColor: 'gray.300' }}
+                                _focus={{ borderColor: accentColor, boxShadow: 'none' }}
+                                isDisabled={!isAuctionActive || createBidLoading}
+                              />
+
+                              {/* Autobid Toggle */}
+                              <VStack spacing={2} w="full">
+                                  <Button
+                                    onClick={toggleAutobid}
+                                    colorScheme={isAutobidActive ? 'green' : 'gray'}
+                                    w="full"
+                                    h="48px"
+                                    borderRadius="md"
+                                    fontSize="md"
+                                    isDisabled={!isAuctionActive || createBidLoading}
+                                  >
+                                      {isAutobidActive ? 'Deactivate Autobid' : 'Activate Autobid'}
+                                  </Button>
+                              </VStack>
+
+                              {/* Place Bid Button */}
+                              <Button
+                                type="submit"
+                                bgGradient="linear(to-r, #4338CA, #7B6FE8)"
+                                color="white"
+                                w="full"
+                                h="48px"
+                                borderRadius="md"
+                                fontSize="md"
+                                isDisabled={
+                                  !isAuctionActive ||
+                                  currentUser?.id === listing?.listing?.auctioneer?.id ||
+                                  createBidLoading
+                                }
+                                isLoading={createBidLoading}
+                                loadingText="Submitting"
+                                _hover={{ bgGradient: 'linear(to-r, #3730A3, #6B7280)' }}
+                              >
+                                  Place Bid
+                              </Button>
+
+                              {/* Close Auction Button (for auctioneer) */}
+                              {currentUser?.id === listing?.listing?.auctioneer?.id && isAuctionActive && (
+                                <Button
+                                  colorScheme="red"
+                                  w="full"
+                                  h="48px"
+                                  borderRadius="md"
+                                  fontSize="md"
+                                  onClick={handleCloseAuction}
+                                  isDisabled={createBidLoading}
+                                  variant="outline"
+                                >
+                                    Close Auction
+                                </Button>
+                              )}
+                          </VStack>
+                      </form>
+                  </VStack>
+              </Flex>
           </MotionCard>
+
+          {/* Autobid Threshold and Increment Modal */}
+          <Modal isOpen={isOpen} onClose={onClose} isCentered motionPreset="slideInBottom">
+              <ModalOverlay backdropFilter="blur(5px)" />
+              <ModalContent
+                borderRadius="xl"
+                boxShadow="xl"
+                bg={cardBg}
+                p={4}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                  <ModalHeader color={accentColor} fontSize="lg" fontWeight="bold">
+                      Configure Autobid
+                  </ModalHeader>
+                  <ModalCloseButton />
+                  <ModalBody>
+                      <Text mb={4} color="gray.500">
+                          Set the maximum amount and increment for automatic bidding.
+                      </Text>
+                      <VStack spacing={4}>
+                          <Input
+                            type="number"
+                            placeholder="Maximum Autobid ($)"
+                            value={autobidThreshold}
+                            onChange={(e) => setAutobidThreshold(e.target.value)}
+                            borderRadius="md"
+                            borderColor="gray.200"
+                            h="48px"
+                            fontSize="md"
+                            _hover={{ borderColor: 'gray.300' }}
+                            _focus={{ borderColor: accentColor, boxShadow: 'none' }}
+                            isDisabled={createBidLoading}
+                          />
+                          <Input
+                            type="number"
+                            placeholder="Increment Amount per Bid ($)"
+                            value={autobidIncrement}
+                            onChange={(e) => setAutobidIncrement(e.target.value)}
+                            borderRadius="md"
+                            borderColor="gray.200"
+                            h="48px"
+                            fontSize="md"
+                            _hover={{ borderColor: 'gray.300' }}
+                            _focus={{ borderColor: accentColor, boxShadow: 'none' }}
+                            isDisabled={createBidLoading}
+                          />
+                      </VStack>
+                  </ModalBody>
+                  <ModalFooter>
+                      <Button
+                        onClick={onClose}
+                        mr={3}
+                        variant="outline"
+                        borderRadius="md"
+                        h="40px"
+                        fontSize="md"
+                      >
+                          Cancel
+                      </Button>
+                      <Button
+                        bgGradient="linear(to-r, #4338CA, #7B6FE8)"
+                        color="white"
+                        borderRadius="md"
+                        h="40px"
+                        fontSize="md"
+                        onClick={handleAutobidSubmit}
+                        _hover={{ bgGradient: 'linear(to-r, #3730A3, #6B7280)' }}
+                      >
+                          Set Autobid
+                      </Button>
+                  </ModalFooter>
+              </ModalContent>
+          </Modal>
       </Box>
     );
 };

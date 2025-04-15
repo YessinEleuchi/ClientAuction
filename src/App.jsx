@@ -4,25 +4,25 @@ import {
   ChakraProvider,
   Box,
 } from '@chakra-ui/react';
-import './App.css'
-import { Header, Footer } from './components'
-import AdminDashboard  from './pages/AdminDashboard/AdminDashboard';
-import { Home, ActiveListings, SignUp, Login, PasswordResetRequest, PasswordReset, CreateListing, ListingDetails, UserDashboard, AllUserListings, ListingBids, WatchList, VerifyActivationOtp, ProtectedRoute, PublicRoute, NotFound } from './pages'; // Import AdminDashboard
+import './App.css';
+import { Header, Footer, ScrollToTopButton, Notifications } from './components'; // Importez ScrollToTopButton
+import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
+import { Home, ActiveListings, SignUp, Login, PasswordResetRequest, PasswordReset, CreateListing, ListingDetails, UserDashboard, AllUserListings, ListingBids, WatchList, VerifyActivationOtp, ProtectedRoute, PublicRoute, NotFound } from './pages';
 import { store } from './app/store';
-import interceptors from "../src/features/interceptors"
+import interceptors from './features/interceptors';
 import Explore from './pages/general/Explore';
 import HowItWorks from './components/How';
 
 const App = () => {
-  document.title = "BID TUN"
-  const navigate = useNavigate()
-  const [isLoaded, setIsLoaded] = useState(false)
+  document.title = 'BID TUN';
+  const navigate = useNavigate();
+  const [isLoaded, setIsLoaded] = useState(false);
   if (!isLoaded) {
-    setIsLoaded(true)
-    interceptors(store, navigate)
+    setIsLoaded(true);
+    interceptors(store, navigate);
   }
   const location = useLocation();
-  const noHeaderFooterRoutes = ['/signup', '/login'];
+  const noHeaderFooterRoutes = ['/signup', '/login', '/verify-activation-otp', '/password-reset-request', '/password-reset']; // Ajoutez les routes d'authentification
   const showHeaderFooter = !noHeaderFooterRoutes.includes(location.pathname);
 
   return (
@@ -31,13 +31,14 @@ const App = () => {
         {showHeaderFooter && <Header />}
         <div className="main">
           <Routes>
-            <Route path="/how" element={<HowItWorks/>} />
+            <Route path="/how" element={<HowItWorks />} />
             <Route exact path="/" element={<Home />} />
             <Route path="/listings" element={<ActiveListings />} />
             <Route path="/listings/categories/:categorySlug" element={<ActiveListings />} />
             <Route path="/watchlist" element={<WatchList />} />
             <Route path="/listings/:listingSlug" element={<ListingDetails />} />
             <Route path="/explore" element={<Explore />} />
+            <Route path="/notifications" element={<Notifications/>}/>
 
             <Route path="/signup" element={<PublicRoute Component={SignUp} />} />
             <Route path="/login" element={<PublicRoute Component={Login} />} />
@@ -60,9 +61,10 @@ const App = () => {
           </Routes>
         </div>
         {showHeaderFooter && <Footer />}
+        {showHeaderFooter && <ScrollToTopButton />} {/* Ajoutez le bouton ici */}
       </Box>
     </ChakraProvider>
   );
-}
+};
 
 export default App;

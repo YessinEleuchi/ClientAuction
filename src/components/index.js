@@ -4,3 +4,5 @@ export { default as Footer } from './Footer';
 export { default as CardListing } from './CardListing';
 export { default as Spinner } from './Spinner';
 export {default as Cards1} from './Cards1'
+export  {default as ScrollToTopButton } from './ScrollToTop'
+export  {default as Notifications } from './notifications'

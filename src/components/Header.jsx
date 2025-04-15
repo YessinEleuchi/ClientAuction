@@ -7,7 +7,7 @@ import { ColorModeSwitcher } from '../ColorModeSwitcher';
 import { translations } from '../constants/translations';
 
 // Lucide Icons
-import { Home, TrendingUp, Eye, PlusCircle, LogOut, User, Settings } from 'lucide-react';
+import { Home, TrendingUp, Eye, PlusCircle, LogOut, User, Bell } from 'lucide-react';
 
 // Chakra UI components
 import {
@@ -39,6 +39,145 @@ import { HamburgerIcon, CloseIcon, ChevronDownIcon } from '@chakra-ui/icons';
 // Logo imports
 import Logo from '../assets/header-logo.png';
 import LogoDark from '../assets/logo-dark.png';
+
+// Fake notification data for WebsiteNotifications
+const fakeNotifications = [
+  {
+    id: 1,
+    message: "Your bid is terminally accepted for the website redesign project!",
+    timestamp: "2025-04-15 10:30 AM",
+    type: "success",
+    icon: "bell",
+  },
+  {
+    id: 2,
+    message: "A new comment on your blog post 'Top 10 Web Design Trends'.",
+    timestamp: "2025-04-15 09:15 AM",
+    type: "info",
+    icon: "bell",
+  },
+  {
+    id: 3,
+    message: "Your website hosting plan will renew in 3 days.",
+    timestamp: "2025-04-14 03:45 PM",
+    type: "warning",
+    icon: "bell",
+  },
+];
+
+// WebsiteNotifications component
+const WebsiteNotifications = () => {
+  const [notifications, setNotifications] = useState(fakeNotifications);
+
+  const dismissNotification = (id) => {
+    setNotifications(notifications.filter((notification) => notification.id !== id));
+  };
+
+  return (
+    <Box
+      w="full"
+      maxW="sm"
+      p={4}
+      bg={useColorModeValue('white', 'gray.800')}
+      rounded="xl"
+      shadow="lg"
+      border="1px"
+      borderColor={useColorModeValue('gray.200', 'gray.700')}
+    >
+      <Flex alignItems="center" justifyContent="space-between" mb={4}>
+        <Text fontSize="lg" fontWeight="semibold" color={useColorModeValue('gray.900', 'gray.100')}>
+          <Bell className="h-5 w-5 mr-2 text-gray-600" />
+          Notifications
+        </Text>
+        {notifications.length > 0 && (
+          <Badge
+            fontSize="xs"
+            colorScheme="red"
+            variant="solid"
+            borderRadius="full"
+            px={2}
+            py={1}
+          >
+            {notifications.length}
+          </Badge>
+        )}
+      </Flex>
+      {notifications.length === 0 ? (
+        <Text fontSize="sm" color="gray.500" textAlign="center">
+          No new notifications
+        </Text>
+      ) : (
+        <Box maxH="64" overflowY="auto" spaceY={3}>
+          {notifications.map((notification) => (
+            <Box
+              key={notification.id}
+              display="flex"
+              alignItems="flex-start"
+              p={3}
+              rounded="lg"
+              border="1px"
+              borderColor={
+                notification.type === 'success'
+                  ? 'green.200'
+                  : notification.type === 'warning'
+                    ? 'yellow.200'
+                    : 'blue.200'
+              }
+              bg={
+                notification.type === 'success'
+                  ? 'green.50'
+                  : notification.type === 'warning'
+                    ? 'yellow.50'
+                    : 'blue.50'
+              }
+              transition="all 0.2s"
+            >
+              <Box flex="1">
+                <Text
+                  fontSize="sm"
+                  fontWeight="medium"
+                  color={
+                    notification.type === 'success'
+                      ? 'green.800'
+                      : notification.type === 'warning'
+                        ? 'yellow.800'
+                        : 'blue.800'
+                  }
+                >
+                  {notification.message}
+                </Text>
+                <Text fontSize="xs" color="gray.500" mt={1}>
+                  {notification.timestamp}
+                </Text>
+              </Box>
+              <IconButton
+                onClick={() => dismissNotification(notification.id)}
+                icon={<Bell size={16} />}
+                variant="ghost"
+                size="sm"
+                color="gray.400"
+                _hover={{ color: 'gray.600' }}
+                aria-label="Dismiss notification"
+              />
+            </Box>
+          ))}
+        </Box>
+      )}
+      {notifications.length > 0 && (
+        <Button
+          onClick={() => setNotifications([])}
+          mt={4}
+          fontSize="sm"
+          color="gray.600"
+          variant="link"
+          _hover={{ color: 'gray.800', textDecoration: 'underline' }}
+        >
+          Clear all notifications
+        </Button>
+      )}
+    </Box>
+  );
+};
 
 // Flag icons (SVG inline for simplicity)
 const FrenchFlag = () => (
@@ -278,20 +417,8 @@ const Header = () => {
           }}
           icon={<Home size={18} />}
           _hover={{ bg: hoverBgColor }}
-          _focus={{ bg: hoverBgColor }}
         >
           {t.myDashboard}
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            navigate('/settings');
-            closeMenu();
-          }}
-          icon={<Settings size={18} />}
-          _hover={{ bg: hoverBgColor }}
-          _focus={{ bg: hoverBgColor }}
-        >
-          {t.settings || 'Settings'}
         </MenuItem>
         <Divider my={2} borderColor={borderColor} />
         <MenuItem
@@ -303,6 +430,47 @@ const Header = () => {
         >
           {t.logout}
         </MenuItem>
+      </MenuList>
+    </Menu>
+  );
+
+  const NotificationBell = () => (
+    <Menu>
+      <MenuButton
+        as={IconButton}
+        icon={
+          <Box position="relative">
+            <Bell size={20} />
+            {fakeNotifications.length > 0 && (
+              <Badge
+                position="absolute"
+                top="-1"
+                right="-1"
+                fontSize="xs"
+                colorScheme="red"
+                variant="solid"
+                borderRadius="full"
+                px={2}
+              >
+                {fakeNotifications.length}
+              </Badge>
+            )}
+          </Box>
+        }
+        variant="ghost"
+        size="sm"
+        _hover={{ bg: hoverBgColor }}
+        aria-label="Notifications"
+      />
+      <MenuList
+        zIndex={1100}
+        bg={bgColor}
+        borderColor={borderColor}
+        borderRadius="lg"
+        p={0}
+        minW="xs"
+      >
+        <WebsiteNotifications />
       </MenuList>
     </Menu>
   );
@@ -353,7 +521,7 @@ const Header = () => {
                   <NavLink to="/listings" icon={<TrendingUp size={20} />}>{t.activeListings}</NavLink>
                   {user?.access && (
                     <>
-                      <NavLink to="/watchlist" icon={<Eye size={20} />} badgeCount={3}>
+                      <NavLink to="/watchlist" icon={<Eye size={20} />} badgeCount={1}>
                         {t.watchList}
                       </NavLink>
                       <NavLink to="/create-listing" icon={<PlusCircle size={20} />}>
@@ -369,6 +537,7 @@ const Header = () => {
             <Flex justifyContent="flex-end" alignItems="center" gap={3}>
               <HStack spacing={3}>
                 <LanguageSelector />
+                <NotificationBell /> {/* Added NotificationBell component */}
                 <Tooltip label="Toggle color mode" hasArrow placement="bottom">
                   <IconButton
                     aria-label="Toggle color mode"
@@ -476,7 +645,7 @@ const Header = () => {
                   <NavLink to="/listings" icon={<TrendingUp size={20} />}>{t.activeListings}</NavLink>
                   {user?.access && (
                     <>
-                      <NavLink to="/watchlist" icon={<Eye size={20} />} badgeCount={3}>
+                      <NavLink to="/watchlist" icon={<Eye size={20} />} badgeCount={1}>
                         {t.watchList}
                       </NavLink>
                       <NavLink to="/create-listing" icon={<PlusCircle size={20} />}>
@@ -504,15 +673,15 @@ const Header = () => {
                     <Button
                       variant="ghost"
                       onClick={() => {
-                        navigate('/settings');
+                        navigate('/notifications');
                         closeMenu();
                       }}
-                      leftIcon={<Settings size={20} />}
+                      leftIcon={<Bell size={20} />}
                       justifyContent="flex-start"
                       _hover={{ bg: hoverBgColor }}
-                      aria-label="Settings"
+                      aria-label="Notifications"
                     >
-                      {t.settings || 'Settings'}
+                      {t.settings || 'Notifications'}
                     </Button>
                     <Button
                       variant="ghost"
